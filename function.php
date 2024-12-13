@@ -6,13 +6,4 @@ class PhpFunctionLibrary
     {
         $this->connection = $pdoInstance;
     }
-
-    public function autoLoad(string $path) {
-        $fileListe = scandir($path);
-        foreach($fileListe as $element){
-            if (empty(strpos($fileListe,".php"))) {
-                
-            }
-        }
-    }
 }
