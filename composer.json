@@ -1,19 +1,20 @@
 {
-    "name": "matthieuthuetdev/my-tool-box",
-    "type": "library",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Matthieuthuetdev\\MyToolBox\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "MatthieuThuet",
-            "email": "mthuet.pro@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {}
-    "require-dev": {"php":"^8.0"}
+  "name": "matthieuthuetdev/my-tool-box",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Matthieuthuetdev\\MyToolBox\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "MatthieuThuet",
+      "email": "mthuet.pro@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.0"
+  }
 }
