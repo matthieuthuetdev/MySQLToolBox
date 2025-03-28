@@ -1,7 +1,8 @@
 <?php
+namespace matthieuthuetdev;
 class MyToolBox
 {
-    private PDO $connection;
+    private static $connection;
     public function __construct(PDO $pdoInstance)
     {
         $this->connection = $pdoInstance;
