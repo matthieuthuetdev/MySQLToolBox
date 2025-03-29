@@ -1,5 +1,5 @@
 <?php
-namespace MyTollBox;
+namespace src\MyToolBox;
 use PDO;
 class MyToolBox
 {
