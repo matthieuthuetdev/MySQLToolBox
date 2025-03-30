@@ -1,0 +1,943 @@
+Chemin du fichier : C:\laragon\www\MyToolBox\README.md
+--------------------------------------------------------------------------------
+# phpFuctopLibrary
+ 
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\composer.json
+--------------------------------------------------------------------------------
+{
+  "name": "matthieuthuetdev/my-tool-box",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Matthieuthuetdev\\MyToolBox\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "MatthieuThuet",
+      "email": "mthuet.pro@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.0"
+  }
+}
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\index.php
+--------------------------------------------------------------------------------
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\scan.php
+--------------------------------------------------------------------------------
+<?php
+
+/**
+ * Fonction pour parcourir récursivement les dossiers et fichiers
+ * en ignorant le dossier .git, et écrire leurs chemins et contenus dans un fichier texte.
+ *
+ * @param string $directory Répertoire à parcourir
+ * @param resource $outputFile Ressource du fichier de sortie
+ */
+function scanDirectory(string $directory, $outputFile): void {
+    // Ouvre le répertoire
+    $items = scandir($directory);
+    if ($items === false) {
+        return;
+    }
+
+    foreach ($items as $item) {
+        // Ignore les entrées spéciales "." et ".."
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+
+        $path = $directory . DIRECTORY_SEPARATOR . $item;
+
+        // Ignore le dossier .git
+        if (is_dir($path) && $item === '.git' || $item == '.gitignore' || $item == '.gitattributes' || $item == 'LICENSE' || $item == 'resultat.txt') {
+            continue;
+        }
+
+        // Si c'est un dossier, appel récursif
+        if (is_dir($path)) {
+            scanDirectory($path, $outputFile);
+        } else {
+            // Si c'est un fichier, écrit son chemin et son contenu
+            fwrite($outputFile, "Chemin du fichier : $path\n");
+            fwrite($outputFile, str_repeat('-', 80) . "\n");
+
+            $content = file_get_contents($path);
+            if ($content !== false) {
+                fwrite($outputFile, $content . "\n");
+            } else {
+                fwrite($outputFile, "Impossible de lire le contenu du fichier.\n");
+            }
+
+            fwrite($outputFile, str_repeat('=', 80) . "\n\n");
+        }
+    }
+}
+
+// Chemin du fichier de sortie
+$outputFilePath = 'resultat.txt';
+
+// Ouvre le fichier de sortie en écriture
+$outputFile = fopen($outputFilePath, 'w');
+if ($outputFile === false) {
+    die("Impossible de créer le fichier de sortie.\n");
+}
+
+// Démarre le scan depuis le répertoire courant
+$startDirectory = __DIR__;
+scanDirectory($startDirectory, $outputFile);
+
+// Ferme le fichier de sortie
+fclose($outputFile);
+
+echo "Le scan est terminé. Les résultats sont enregistrés dans '$outputFilePath'.\n";
+?>
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\src\MyToolBox.php
+--------------------------------------------------------------------------------
+<?php
+use PDO;
+class MyToolBox
+{
+    private  $connection;
+    public function __construct(PDO $pdoInstance)
+    {
+        $this->connection = $pdoInstance;
+    }
+    public function exportDatabase(){
+        $requrest = "SHOW TABLES";
+        $rq = $this->connection->prepare($requrest);
+        $rq->execute();
+        $result = $rq->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+}
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\test.php
+--------------------------------------------------------------------------------
+<?php
+echo phpinfo();
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\teste.txt
+--------------------------------------------------------------------------------
+   ______
+  / ____/___  ____ ___  ____  ____  ________  _____
+ / /   / __ \/ __ `__ \/ __ \/ __ \/ ___/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ (__  )  __/ /
+\____/\____/_/ /_/ /_/ .___/\____/____/\___/_/
+                    /_/
+Composer version 2.7.9 2024-09-04 14:43:28
+
+Usage:
+  command [options] [arguments]
+
+Options:
+  -h, --help                     Display help for the given command. When no command is given display help for the list command
+  -q, --quiet                    Do not output any message
+  -V, --version                  Display this application version
+      --ansi|--no-ansi           Force (or disable --no-ansi) ANSI output
+  -n, --no-interaction           Do not ask any interactive question
+      --profile                  Display timing and memory usage information
+      --no-plugins               Whether to disable plugins.
+      --no-scripts               Skips the execution of all scripts defined in composer.json file.
+  -d, --working-dir=WORKING-DIR  If specified, use the given directory as working directory.
+      --no-cache                 Prevent use of the cache
+  -v|vv|vvv, --verbose           Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+Available commands:
+  about                Shows a short information about Composer
+  archive              Creates an archive of this composer package
+  audit                Checks for security vulnerability advisories for installed packages
+  browse               [home] Opens the package's repository URL or homepage in your browser
+  bump                 Increases the lower limit of your composer.json requirements to the currently installed versions
+  check-platform-reqs  Check that platform requirements are satisfied
+  clear-cache          [clearcache|cc] Clears composer's internal package cache
+  completion           Dump the shell completion script
+  config               Sets config options
+  create-project       Creates new project from a package into given directory
+  depends              [why] Shows which packages cause the given package to be installed
+  diagnose             Diagnoses the system to identify common errors
+  dump-autoload        [dumpautoload] Dumps the autoloader
+  exec                 Executes a vendored binary/script
+  fund                 Discover how to help fund the maintenance of your dependencies
+  global               Allows running commands in the global composer dir ($COMPOSER_HOME)
+  help                 Display help for a command
+  init                 Creates a basic composer.json file in current directory
+  install              [i] Installs the project dependencies from the composer.lock file if present, or falls back on the composer.json
+  licenses             Shows information about licenses of dependencies
+  list                 List commands
+  outdated             Shows a list of installed packages that have updates available, including their latest version
+  prohibits            [why-not] Shows which packages prevent the given package from being installed
+  reinstall            Uninstalls and reinstalls the given package names
+  remove               [rm|uninstall] Removes a package from the require or require-dev
+  require              [r] Adds required packages to your composer.json and installs them
+  run-script           [run] Runs the scripts defined in composer.json
+  search               Searches for packages
+  self-update          [selfupdate] Updates composer.phar to the latest version
+  show                 [info] Shows information about packages
+  status               Shows a list of locally modified packages
+  suggests             Shows package suggestions
+  update               [u|upgrade] Updates your dependencies to the latest version according to composer.json, and updates the composer.lock file
+  validate             Validates a composer.json and composer.lock
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\autoload.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload.php @generated by Composer
+
+if (PHP_VERSION_ID < 50600) {
+    if (!headers_sent()) {
+        header('HTTP/1.1 500 Internal Server Error');
+    }
+    $err = 'Composer 2.3.0 dropped support for autoloading on PHP <5.6 and you are running '.PHP_VERSION.', please upgrade PHP or use Composer 2.2 LTS via "composer self-update --2.2". Aborting.'.PHP_EOL;
+    if (!ini_get('display_errors')) {
+        if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
+            fwrite(STDERR, $err);
+        } elseif (!headers_sent()) {
+            echo $err;
+        }
+    }
+    trigger_error(
+        $err,
+        E_USER_ERROR
+    );
+}
+
+require_once __DIR__ . '/composer/autoload_real.php';
+
+return ComposerAutoloaderInit949d0c4fcf5a0daf562de5639e4722a0::getLoader();
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\ClassLoader.php
+--------------------------------------------------------------------------------
+<?php
+
+/*
+ * This file is part of Composer.
+ *
+ * (c) Nils Adermann <naderman@naderman.de>
+ *     Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Composer\Autoload;
+
+/**
+ * ClassLoader implements a PSR-0, PSR-4 and classmap class loader.
+ *
+ *     $loader = new \Composer\Autoload\ClassLoader();
+ *
+ *     // register classes with namespaces
+ *     $loader->add('Symfony\Component', __DIR__.'/component');
+ *     $loader->add('Symfony',           __DIR__.'/framework');
+ *
+ *     // activate the autoloader
+ *     $loader->register();
+ *
+ *     // to enable searching the include path (eg. for PEAR packages)
+ *     $loader->setUseIncludePath(true);
+ *
+ * In this example, if you try to use a class in the Symfony\Component
+ * namespace or one of its children (Symfony\Component\Console for instance),
+ * the autoloader will first look for the class under the component/
+ * directory, and it will then fallback to the framework/ directory if not
+ * found before giving up.
+ *
+ * This class is loosely based on the Symfony UniversalClassLoader.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Jordi Boggiano <j.boggiano@seld.be>
+ * @see    https://www.php-fig.org/psr/psr-0/
+ * @see    https://www.php-fig.org/psr/psr-4/
+ */
+class ClassLoader
+{
+    /** @var \Closure(string):void */
+    private static $includeFile;
+
+    /** @var string|null */
+    private $vendorDir;
+
+    // PSR-4
+    /**
+     * @var array<string, array<string, int>>
+     */
+    private $prefixLengthsPsr4 = array();
+    /**
+     * @var array<string, list<string>>
+     */
+    private $prefixDirsPsr4 = array();
+    /**
+     * @var list<string>
+     */
+    private $fallbackDirsPsr4 = array();
+
+    // PSR-0
+    /**
+     * List of PSR-0 prefixes
+     *
+     * Structured as array('F (first letter)' => array('Foo\Bar (full prefix)' => array('path', 'path2')))
+     *
+     * @var array<string, array<string, list<string>>>
+     */
+    private $prefixesPsr0 = array();
+    /**
+     * @var list<string>
+     */
+    private $fallbackDirsPsr0 = array();
+
+    /** @var bool */
+    private $useIncludePath = false;
+
+    /**
+     * @var array<string, string>
+     */
+    private $classMap = array();
+
+    /** @var bool */
+    private $classMapAuthoritative = false;
+
+    /**
+     * @var array<string, bool>
+     */
+    private $missingClasses = array();
+
+    /** @var string|null */
+    private $apcuPrefix;
+
+    /**
+     * @var array<string, self>
+     */
+    private static $registeredLoaders = array();
+
+    /**
+     * @param string|null $vendorDir
+     */
+    public function __construct($vendorDir = null)
+    {
+        $this->vendorDir = $vendorDir;
+        self::initializeIncludeClosure();
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    public function getPrefixes()
+    {
+        if (!empty($this->prefixesPsr0)) {
+            return call_user_func_array('array_merge', array_values($this->prefixesPsr0));
+        }
+
+        return array();
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    public function getPrefixesPsr4()
+    {
+        return $this->prefixDirsPsr4;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getFallbackDirs()
+    {
+        return $this->fallbackDirsPsr0;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getFallbackDirsPsr4()
+    {
+        return $this->fallbackDirsPsr4;
+    }
+
+    /**
+     * @return array<string, string> Array of classname => path
+     */
+    public function getClassMap()
+    {
+        return $this->classMap;
+    }
+
+    /**
+     * @param array<string, string> $classMap Class to filename map
+     *
+     * @return void
+     */
+    public function addClassMap(array $classMap)
+    {
+        if ($this->classMap) {
+            $this->classMap = array_merge($this->classMap, $classMap);
+        } else {
+            $this->classMap = $classMap;
+        }
+    }
+
+    /**
+     * Registers a set of PSR-0 directories for a given prefix, either
+     * appending or prepending to the ones previously set for this prefix.
+     *
+     * @param string              $prefix  The prefix
+     * @param list<string>|string $paths   The PSR-0 root directories
+     * @param bool                $prepend Whether to prepend the directories
+     *
+     * @return void
+     */
+    public function add($prefix, $paths, $prepend = false)
+    {
+        $paths = (array) $paths;
+        if (!$prefix) {
+            if ($prepend) {
+                $this->fallbackDirsPsr0 = array_merge(
+                    $paths,
+                    $this->fallbackDirsPsr0
+                );
+            } else {
+                $this->fallbackDirsPsr0 = array_merge(
+                    $this->fallbackDirsPsr0,
+                    $paths
+                );
+            }
+
+            return;
+        }
+
+        $first = $prefix[0];
+        if (!isset($this->prefixesPsr0[$first][$prefix])) {
+            $this->prefixesPsr0[$first][$prefix] = $paths;
+
+            return;
+        }
+        if ($prepend) {
+            $this->prefixesPsr0[$first][$prefix] = array_merge(
+                $paths,
+                $this->prefixesPsr0[$first][$prefix]
+            );
+        } else {
+            $this->prefixesPsr0[$first][$prefix] = array_merge(
+                $this->prefixesPsr0[$first][$prefix],
+                $paths
+            );
+        }
+    }
+
+    /**
+     * Registers a set of PSR-4 directories for a given namespace, either
+     * appending or prepending to the ones previously set for this namespace.
+     *
+     * @param string              $prefix  The prefix/namespace, with trailing '\\'
+     * @param list<string>|string $paths   The PSR-4 base directories
+     * @param bool                $prepend Whether to prepend the directories
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return void
+     */
+    public function addPsr4($prefix, $paths, $prepend = false)
+    {
+        $paths = (array) $paths;
+        if (!$prefix) {
+            // Register directories for the root namespace.
+            if ($prepend) {
+                $this->fallbackDirsPsr4 = array_merge(
+                    $paths,
+                    $this->fallbackDirsPsr4
+                );
+            } else {
+                $this->fallbackDirsPsr4 = array_merge(
+                    $this->fallbackDirsPsr4,
+                    $paths
+                );
+            }
+        } elseif (!isset($this->prefixDirsPsr4[$prefix])) {
+            // Register directories for a new namespace.
+            $length = strlen($prefix);
+            if ('\\' !== $prefix[$length - 1]) {
+                throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
+            }
+            $this->prefixLengthsPsr4[$prefix[0]][$prefix] = $length;
+            $this->prefixDirsPsr4[$prefix] = $paths;
+        } elseif ($prepend) {
+            // Prepend directories for an already registered namespace.
+            $this->prefixDirsPsr4[$prefix] = array_merge(
+                $paths,
+                $this->prefixDirsPsr4[$prefix]
+            );
+        } else {
+            // Append directories for an already registered namespace.
+            $this->prefixDirsPsr4[$prefix] = array_merge(
+                $this->prefixDirsPsr4[$prefix],
+                $paths
+            );
+        }
+    }
+
+    /**
+     * Registers a set of PSR-0 directories for a given prefix,
+     * replacing any others previously set for this prefix.
+     *
+     * @param string              $prefix The prefix
+     * @param list<string>|string $paths  The PSR-0 base directories
+     *
+     * @return void
+     */
+    public function set($prefix, $paths)
+    {
+        if (!$prefix) {
+            $this->fallbackDirsPsr0 = (array) $paths;
+        } else {
+            $this->prefixesPsr0[$prefix[0]][$prefix] = (array) $paths;
+        }
+    }
+
+    /**
+     * Registers a set of PSR-4 directories for a given namespace,
+     * replacing any others previously set for this namespace.
+     *
+     * @param string              $prefix The prefix/namespace, with trailing '\\'
+     * @param list<string>|string $paths  The PSR-4 base directories
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return void
+     */
+    public function setPsr4($prefix, $paths)
+    {
+        if (!$prefix) {
+            $this->fallbackDirsPsr4 = (array) $paths;
+        } else {
+            $length = strlen($prefix);
+            if ('\\' !== $prefix[$length - 1]) {
+                throw new \InvalidArgumentException("A non-empty PSR-4 prefix must end with a namespace separator.");
+            }
+            $this->prefixLengthsPsr4[$prefix[0]][$prefix] = $length;
+            $this->prefixDirsPsr4[$prefix] = (array) $paths;
+        }
+    }
+
+    /**
+     * Turns on searching the include path for class files.
+     *
+     * @param bool $useIncludePath
+     *
+     * @return void
+     */
+    public function setUseIncludePath($useIncludePath)
+    {
+        $this->useIncludePath = $useIncludePath;
+    }
+
+    /**
+     * Can be used to check if the autoloader uses the include path to check
+     * for classes.
+     *
+     * @return bool
+     */
+    public function getUseIncludePath()
+    {
+        return $this->useIncludePath;
+    }
+
+    /**
+     * Turns off searching the prefix and fallback directories for classes
+     * that have not been registered with the class map.
+     *
+     * @param bool $classMapAuthoritative
+     *
+     * @return void
+     */
+    public function setClassMapAuthoritative($classMapAuthoritative)
+    {
+        $this->classMapAuthoritative = $classMapAuthoritative;
+    }
+
+    /**
+     * Should class lookup fail if not found in the current class map?
+     *
+     * @return bool
+     */
+    public function isClassMapAuthoritative()
+    {
+        return $this->classMapAuthoritative;
+    }
+
+    /**
+     * APCu prefix to use to cache found/not-found classes, if the extension is enabled.
+     *
+     * @param string|null $apcuPrefix
+     *
+     * @return void
+     */
+    public function setApcuPrefix($apcuPrefix)
+    {
+        $this->apcuPrefix = function_exists('apcu_fetch') && filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN) ? $apcuPrefix : null;
+    }
+
+    /**
+     * The APCu prefix in use, or null if APCu caching is not enabled.
+     *
+     * @return string|null
+     */
+    public function getApcuPrefix()
+    {
+        return $this->apcuPrefix;
+    }
+
+    /**
+     * Registers this instance as an autoloader.
+     *
+     * @param bool $prepend Whether to prepend the autoloader or not
+     *
+     * @return void
+     */
+    public function register($prepend = false)
+    {
+        spl_autoload_register(array($this, 'loadClass'), true, $prepend);
+
+        if (null === $this->vendorDir) {
+            return;
+        }
+
+        if ($prepend) {
+            self::$registeredLoaders = array($this->vendorDir => $this) + self::$registeredLoaders;
+        } else {
+            unset(self::$registeredLoaders[$this->vendorDir]);
+            self::$registeredLoaders[$this->vendorDir] = $this;
+        }
+    }
+
+    /**
+     * Unregisters this instance as an autoloader.
+     *
+     * @return void
+     */
+    public function unregister()
+    {
+        spl_autoload_unregister(array($this, 'loadClass'));
+
+        if (null !== $this->vendorDir) {
+            unset(self::$registeredLoaders[$this->vendorDir]);
+        }
+    }
+
+    /**
+     * Loads the given class or interface.
+     *
+     * @param  string    $class The name of the class
+     * @return true|null True if loaded, null otherwise
+     */
+    public function loadClass($class)
+    {
+        if ($file = $this->findFile($class)) {
+            $includeFile = self::$includeFile;
+            $includeFile($file);
+
+            return true;
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the path to the file where the class is defined.
+     *
+     * @param string $class The name of the class
+     *
+     * @return string|false The path if found, false otherwise
+     */
+    public function findFile($class)
+    {
+        // class map lookup
+        if (isset($this->classMap[$class])) {
+            return $this->classMap[$class];
+        }
+        if ($this->classMapAuthoritative || isset($this->missingClasses[$class])) {
+            return false;
+        }
+        if (null !== $this->apcuPrefix) {
+            $file = apcu_fetch($this->apcuPrefix.$class, $hit);
+            if ($hit) {
+                return $file;
+            }
+        }
+
+        $file = $this->findFileWithExtension($class, '.php');
+
+        // Search for Hack files if we are running on HHVM
+        if (false === $file && defined('HHVM_VERSION')) {
+            $file = $this->findFileWithExtension($class, '.hh');
+        }
+
+        if (null !== $this->apcuPrefix) {
+            apcu_add($this->apcuPrefix.$class, $file);
+        }
+
+        if (false === $file) {
+            // Remember that this class does not exist.
+            $this->missingClasses[$class] = true;
+        }
+
+        return $file;
+    }
+
+    /**
+     * Returns the currently registered loaders keyed by their corresponding vendor directories.
+     *
+     * @return array<string, self>
+     */
+    public static function getRegisteredLoaders()
+    {
+        return self::$registeredLoaders;
+    }
+
+    /**
+     * @param  string       $class
+     * @param  string       $ext
+     * @return string|false
+     */
+    private function findFileWithExtension($class, $ext)
+    {
+        // PSR-4 lookup
+        $logicalPathPsr4 = strtr($class, '\\', DIRECTORY_SEPARATOR) . $ext;
+
+        $first = $class[0];
+        if (isset($this->prefixLengthsPsr4[$first])) {
+            $subPath = $class;
+            while (false !== $lastPos = strrpos($subPath, '\\')) {
+                $subPath = substr($subPath, 0, $lastPos);
+                $search = $subPath . '\\';
+                if (isset($this->prefixDirsPsr4[$search])) {
+                    $pathEnd = DIRECTORY_SEPARATOR . substr($logicalPathPsr4, $lastPos + 1);
+                    foreach ($this->prefixDirsPsr4[$search] as $dir) {
+                        if (file_exists($file = $dir . $pathEnd)) {
+                            return $file;
+                        }
+                    }
+                }
+            }
+        }
+
+        // PSR-4 fallback dirs
+        foreach ($this->fallbackDirsPsr4 as $dir) {
+            if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr4)) {
+                return $file;
+            }
+        }
+
+        // PSR-0 lookup
+        if (false !== $pos = strrpos($class, '\\')) {
+            // namespaced class name
+            $logicalPathPsr0 = substr($logicalPathPsr4, 0, $pos + 1)
+                . strtr(substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
+        } else {
+            // PEAR-like class name
+            $logicalPathPsr0 = strtr($class, '_', DIRECTORY_SEPARATOR) . $ext;
+        }
+
+        if (isset($this->prefixesPsr0[$first])) {
+            foreach ($this->prefixesPsr0[$first] as $prefix => $dirs) {
+                if (0 === strpos($class, $prefix)) {
+                    foreach ($dirs as $dir) {
+                        if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
+                            return $file;
+                        }
+                    }
+                }
+            }
+        }
+
+        // PSR-0 fallback dirs
+        foreach ($this->fallbackDirsPsr0 as $dir) {
+            if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
+                return $file;
+            }
+        }
+
+        // PSR-0 include paths.
+        if ($this->useIncludePath && $file = stream_resolve_include_path($logicalPathPsr0)) {
+            return $file;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return void
+     */
+    private static function initializeIncludeClosure()
+    {
+        if (self::$includeFile !== null) {
+            return;
+        }
+
+        /**
+         * Scope isolated include.
+         *
+         * Prevents access to $this/self from included files.
+         *
+         * @param  string $file
+         * @return void
+         */
+        self::$includeFile = \Closure::bind(static function($file) {
+            include $file;
+        }, null, null);
+    }
+}
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\autoload_classmap.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload_classmap.php @generated by Composer
+
+$vendorDir = dirname(__DIR__);
+$baseDir = dirname($vendorDir);
+
+return array(
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+);
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\autoload_namespaces.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload_namespaces.php @generated by Composer
+
+$vendorDir = dirname(__DIR__);
+$baseDir = dirname($vendorDir);
+
+return array(
+);
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\autoload_psr4.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload_psr4.php @generated by Composer
+
+$vendorDir = dirname(__DIR__);
+$baseDir = dirname($vendorDir);
+
+return array(
+    'Matthieuthuetdev\\MyToolBox\\' => array($baseDir . '/src'),
+);
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\autoload_real.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload_real.php @generated by Composer
+
+class ComposerAutoloaderInit949d0c4fcf5a0daf562de5639e4722a0
+{
+    private static $loader;
+
+    public static function loadClassLoader($class)
+    {
+        if ('Composer\Autoload\ClassLoader' === $class) {
+            require __DIR__ . '/ClassLoader.php';
+        }
+    }
+
+    /**
+     * @return \Composer\Autoload\ClassLoader
+     */
+    public static function getLoader()
+    {
+        if (null !== self::$loader) {
+            return self::$loader;
+        }
+
+        spl_autoload_register(array('ComposerAutoloaderInit949d0c4fcf5a0daf562de5639e4722a0', 'loadClassLoader'), true, true);
+        self::$loader = $loader = new \Composer\Autoload\ClassLoader(\dirname(__DIR__));
+        spl_autoload_unregister(array('ComposerAutoloaderInit949d0c4fcf5a0daf562de5639e4722a0', 'loadClassLoader'));
+
+        require __DIR__ . '/autoload_static.php';
+        call_user_func(\Composer\Autoload\ComposerStaticInit949d0c4fcf5a0daf562de5639e4722a0::getInitializer($loader));
+
+        $loader->register(true);
+
+        return $loader;
+    }
+}
+
+================================================================================
+
+Chemin du fichier : C:\laragon\www\MyToolBox\vendor\composer\autoload_static.php
+--------------------------------------------------------------------------------
+<?php
+
+// autoload_static.php @generated by Composer
+
+namespace Composer\Autoload;
+
+class ComposerStaticInit949d0c4fcf5a0daf562de5639e4722a0
+{
+    public static $prefixLengthsPsr4 = array (
+        'M' => 
+        array (
+            'Matthieuthuetdev\\MyToolBox\\' => 27,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Matthieuthuetdev\\MyToolBox\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
+    public static function getInitializer(ClassLoader $loader)
+    {
+        return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInit949d0c4fcf5a0daf562de5639e4722a0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit949d0c4fcf5a0daf562de5639e4722a0::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit949d0c4fcf5a0daf562de5639e4722a0::$classMap;
+
+        }, null, ClassLoader::class);
+    }
+}
+
+================================================================================
+
