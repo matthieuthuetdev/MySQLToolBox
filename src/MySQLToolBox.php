@@ -1,10 +1,10 @@
 <?php
 
-namespace Matthieuthuetdev\MyToolBox;
+namespace Matthieuthuetdev\MySQLToolBox;
 
 use PDO;
 
-class MyToolBox
+class MySQLToolBox
 {
     private $connection;
 
@@ -13,12 +13,14 @@ class MyToolBox
         $this->connection = $pdoInstance;
     }
 
-    public function exportDatabase()
+    public function exportDatabase():void
     {
         $request = "SHOW TABLES";
         $rq = $this->connection->prepare($request);
         $rq->execute();
-        $result = $rq->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        $result = $rq->fetchAll(PDO::FETCH_COLUMN);
+        $data = [];
+        $data = 
+        
     }
 }
