@@ -6,4 +6,3 @@ use Matthieuthuetdev\MySQLToolBox\MySQLToolBox;
 
 $tool = new MySQLToolBox(Database::getInstance());
 var_dump($tool->exportDatabase());
-var_dump(Database::getInstance());
